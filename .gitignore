@@ -1,5 +1,7 @@
 .gradle/
 .idea/
+
+build/
 build.gradle
 gradle/
 gradlew
