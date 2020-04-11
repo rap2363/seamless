@@ -1,6 +1,7 @@
 package application;
 
 import core.Pixels;
+import core.structures.ConnectedImage;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -18,14 +19,13 @@ public final class SeamCarver {
         final BufferedImage image = ImageIO.read(new File(filePath));
         final String newFile = "new_altered.png";
         final BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
-        for (int x = 0; x < newImage.getWidth(); x++) {
-            for (int y = 0; y < newImage.getHeight(); y++) {
-                newImage.setRGB(x, y, Pixels.toRGB(
-                        Pixels.getAlphaAtXY(image, x, y),
-                        Pixels.getRedAtXY(image, x, y),
-                        Pixels.getGreenAtXY(image, x, y),
-                        Pixels.getBlueAtXY(image, x, y)
-                ));
+
+        final ConnectedImage connectedImage = new ConnectedImage(image.getHeight(), image.getWidth(), image);
+
+        int i = 0;
+        for (int y = 0; y < newImage.getHeight(); y++) {
+            for (int x = 0; x < newImage.getWidth(); x++) {
+                newImage.setRGB(x, y, connectedImage.pixelNodes[i++].getRGBValue());
             }
         }
 
