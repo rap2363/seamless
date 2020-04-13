@@ -2,7 +2,7 @@ package application;
 
 import core.Images;
 import core.costs.EnergyCostFunction;
-import core.seams.VerticalSeamFinder;
+import core.seams.SeamFinder;
 import core.structures.ConnectedImage;
 import org.apache.commons.cli.*;
 
@@ -28,9 +28,16 @@ public final class SeamCarver {
                 .desc("Number of vertical seams to remove from image")
                 .type(Number.class)
                 .build();
+        final Option numHorizontalSeamsOpt = Option.builder()
+                .hasArg()
+                .longOpt("numHorizontalSeams")
+                .desc("Number of vertical seams to remove from image")
+                .type(Number.class)
+                .build();
 
         options.addOption(imageFilePathOpt);
         options.addOption(numVerticalSeamsOpt);
+        options.addOption(numHorizontalSeamsOpt);
 
         final CommandLineParser parser = new DefaultParser();
         final CommandLine cmd = parser.parse(options, args);
@@ -38,28 +45,35 @@ public final class SeamCarver {
 
         final BufferedImage image = ImageIO.read(new File(filePath));
         final String outputFilePath = filePath.split("\\.")[0] + "_altered.png";
-        final Object parsedValue = cmd.getParsedOptionValue("numVerticalSeams");
-        final long numVerticalSeams = parsedValue == null ? 0 : (long) parsedValue;
+
+        final Object parsedNumVerticalSeams = cmd.getParsedOptionValue("numVerticalSeams");
+        final long numVerticalSeams = parsedNumVerticalSeams == null ? 0 : (long) parsedNumVerticalSeams;
+
+        final Object parsedNumHorizontalSeams = cmd.getParsedOptionValue("numHorizontalSeams");
+        final long numHorizontalSeams = parsedNumHorizontalSeams == null ? 0 : (long) parsedNumHorizontalSeams;
 
         ConnectedImage connectedImage = new ConnectedImage(image.getHeight(), image.getWidth(), image);
+        final SeamFinder seamFinder = new SeamFinder(new EnergyCostFunction());
+
         for (int i = 0; i < numVerticalSeams; i++) {
-            final int[] verticalSeamToRemove
-                    = new VerticalSeamFinder(new EnergyCostFunction()).findMinimumVerticalSeam(connectedImage);
+            final int[] verticalSeamToRemove = seamFinder.findMinimumVerticalSeam(connectedImage);
             connectedImage = connectedImage.removeVerticalSeam(verticalSeamToRemove);
         }
 
-        final BufferedImage newImage = new BufferedImage(
-                connectedImage.getWidth(),
-                connectedImage.getHeight(),
-                image.getType()
-        );
+        for (int i = 0; i < numHorizontalSeams; i++) {
+            if (i == 0) {
+                connectedImage = connectedImage.rotateRight();
+            }
 
-        for (int y = 0; y < newImage.getHeight(); y++) {
-            for (int x = 0; x < newImage.getWidth(); x++) {
-                newImage.setRGB(x, y, connectedImage.pixelValues[Images.getIndex(x, y, newImage.getWidth())]);
+            final int[] verticalSeamToRemove = seamFinder.findMinimumVerticalSeam(connectedImage);
+            connectedImage = connectedImage.removeVerticalSeam(verticalSeamToRemove);
+
+            if (i == numHorizontalSeams - 1) {
+                connectedImage = connectedImage.rotateLeft();
             }
         }
 
+        final BufferedImage newImage = Images.toBufferedImage(connectedImage, image.getType());
         ImageIO.write(newImage, "png", new File(outputFilePath));
     }
 }

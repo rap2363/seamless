@@ -1,8 +1,10 @@
 package core;
 
-import java.awt.image.BufferedImage;
-
 public final class Pixels {
+    public static final int RED = Pixels.toRGB(255, 255, 0, 0);
+    public static final int GREEN = Pixels.toRGB(255, 0, 255, 0);
+    public static final int BLUE = Pixels.toRGB(255, 0, 0, 255);
+
     private Pixels() {
         // Exists to defeat instantiation
     }
@@ -11,32 +13,16 @@ public final class Pixels {
         return (rgbPixel >> 24) & 0xff;
     }
 
-    public static int getAlphaAtXY(final BufferedImage image, final int x, final int y) {
-        return getAlpha(image.getRGB(x, y));
-    }
-
     public static int getRed(final int rgbPixel) {
         return (rgbPixel >> 16) & 0xff;
-    }
-
-    public static int getRedAtXY(final BufferedImage image, final int x, final int y) {
-        return getRed(image.getRGB(x, y));
     }
 
     public static int getGreen(final int rgbPixel) {
         return (rgbPixel >> 8) & 0xff;
     }
 
-    public static int getGreenAtXY(final BufferedImage image, final int x, final int y) {
-        return getGreen(image.getRGB(x, y));
-    }
-
     public static int getBlue(final int rgbPixel) {
         return rgbPixel & 0xff;
-    }
-
-    public static int getBlueAtXY(final BufferedImage image, final int x, final int y) {
-        return getBlue(image.getRGB(x, y));
     }
 
     public static int toRGB(final int alpha, final int red, final int green, final int blue) {
