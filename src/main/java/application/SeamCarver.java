@@ -1,36 +1,51 @@
 package application;
 
 import core.Images;
+import core.costs.EnergyCostFunction;
+import core.seams.VerticalSeamFinder;
 import core.structures.ConnectedImage;
+import org.apache.commons.cli.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 
 public final class SeamCarver {
-    public static void main(final String[] args) throws IOException {
-        if (args.length != 1) {
-            System.out.println("Provide a file path!");
-            System.exit(1);
-        }
+    public static void main(final String[] args) throws IOException, ParseException {
+        final Options options = new Options();
 
-        final String filePath = args[0];
+        final Option imageFilePathOpt = Option.builder()
+                .hasArg()
+                .longOpt("imageFilePath")
+                .desc("Image file path")
+                .type(String.class)
+                .required()
+                .build();
+        final Option numVerticalSeamsOpt = Option.builder()
+                .hasArg()
+                .longOpt("numVerticalSeams")
+                .desc("Number of vertical seams to remove from image")
+                .type(Number.class)
+                .build();
+
+        options.addOption(imageFilePathOpt);
+        options.addOption(numVerticalSeamsOpt);
+
+        final CommandLineParser parser = new DefaultParser();
+        final CommandLine cmd = parser.parse(options, args);
+        final String filePath = cmd.getOptionValue(imageFilePathOpt.getLongOpt());
+
         final BufferedImage image = ImageIO.read(new File(filePath));
-        final String newFile = "new_altered.png";
-        ConnectedImage connectedImage = new ConnectedImage(image.getHeight(), image.getWidth(), image);
-        final Random random = new Random(0);
-        final int numVerticalSeams = 300;
-        for (int i = 0; i < numVerticalSeams; i++) {
-            final int[] verticalSeam = new int[connectedImage.getHeight()];
-            int walkIndex = 250;
-            for (int y = 0; y < connectedImage.getHeight(); y++) {
-                verticalSeam[y] = walkIndex;
-                walkIndex += random.nextInt(3) - 1;
-            }
+        final String outputFilePath = filePath.split("\\.")[0] + "_altered.png";
+        final Object parsedValue = cmd.getParsedOptionValue("numVerticalSeams");
+        final long numVerticalSeams = parsedValue == null ? 0 : (long) parsedValue;
 
-            connectedImage = connectedImage.removeVerticalSeam(verticalSeam);
+        ConnectedImage connectedImage = new ConnectedImage(image.getHeight(), image.getWidth(), image);
+        for (int i = 0; i < numVerticalSeams; i++) {
+            final int[] verticalSeamToRemove
+                    = new VerticalSeamFinder(new EnergyCostFunction()).findMinimumVerticalSeam(connectedImage);
+            connectedImage = connectedImage.removeVerticalSeam(verticalSeamToRemove);
         }
 
         final BufferedImage newImage = new BufferedImage(
@@ -41,11 +56,10 @@ public final class SeamCarver {
 
         for (int y = 0; y < newImage.getHeight(); y++) {
             for (int x = 0; x < newImage.getWidth(); x++) {
-                newImage.setRGB(x, y, connectedImage.pixelNodes[
-                        Images.getIndex(x, y, newImage.getWidth())].getRGBValue());
+                newImage.setRGB(x, y, connectedImage.pixelValues[Images.getIndex(x, y, newImage.getWidth())]);
             }
         }
 
-        ImageIO.write(newImage, "png", new File(newFile));
+        ImageIO.write(newImage, "png", new File(outputFilePath));
     }
 }
