@@ -23,16 +23,10 @@ public final class SeamCarver {
         final String newFile = "new_altered.png";
         ConnectedImage connectedImage = new ConnectedImage(image.getHeight(), image.getWidth(), image);
         final Random random = new Random(0);
-        final int numVerticalSeams = 300;
+        final int numVerticalSeams = 100;
         for (int i = 0; i < numVerticalSeams; i++) {
-            final int[] verticalSeam = new int[connectedImage.getHeight()];
-            final int[] verticalSeamToRemove = new VerticalSeamFinder(new EnergyCostFunction()).findMinimumVerticalSeam(connectedImage);
-            int walkIndex = 250;
-            for (int y = 0; y < connectedImage.getHeight(); y++) {
-                verticalSeam[y] = walkIndex;
-                walkIndex += random.nextInt(3) - 1;
-            }
-
+            final int[] verticalSeamToRemove
+                    = new VerticalSeamFinder(new EnergyCostFunction()).findMinimumVerticalSeam(connectedImage);
             connectedImage = connectedImage.removeVerticalSeam(verticalSeamToRemove);
         }
 
@@ -44,8 +38,7 @@ public final class SeamCarver {
 
         for (int y = 0; y < newImage.getHeight(); y++) {
             for (int x = 0; x < newImage.getWidth(); x++) {
-                newImage.setRGB(x, y, connectedImage.pixelNodes[
-                        Images.getIndex(x, y, newImage.getWidth())].getRGBValue());
+                newImage.setRGB(x, y, connectedImage.pixelValues[Images.getIndex(x, y, newImage.getWidth())]);
             }
         }
 
