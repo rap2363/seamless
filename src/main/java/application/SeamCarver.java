@@ -1,6 +1,8 @@
 package application;
 
 import core.Images;
+import core.costs.EnergyCostFunction;
+import core.seams.VerticalSeamFinder;
 import core.structures.ConnectedImage;
 
 import javax.imageio.ImageIO;
@@ -24,13 +26,14 @@ public final class SeamCarver {
         final int numVerticalSeams = 300;
         for (int i = 0; i < numVerticalSeams; i++) {
             final int[] verticalSeam = new int[connectedImage.getHeight()];
+            final int[] verticalSeamToRemove = new VerticalSeamFinder(new EnergyCostFunction()).findMinimumVerticalSeam(connectedImage);
             int walkIndex = 250;
             for (int y = 0; y < connectedImage.getHeight(); y++) {
                 verticalSeam[y] = walkIndex;
                 walkIndex += random.nextInt(3) - 1;
             }
 
-            connectedImage = connectedImage.removeVerticalSeam(verticalSeam);
+            connectedImage = connectedImage.removeVerticalSeam(verticalSeamToRemove);
         }
 
         final BufferedImage newImage = new BufferedImage(

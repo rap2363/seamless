@@ -107,7 +107,11 @@ public final class ConnectedImage {
         return null;
     }
 
-    public int getRgbPixelAt(final int x, final int y) {
+    public boolean outOfBounds(final int x, final int y) {
+        return getPixelNodeOrNullAt(x, y) == null;
+    }
+
+    public int getPixelRGBValueAt(final int x, final int y) {
         return getPixelNodeAt(x, y).getRGBValue();
     }
 
