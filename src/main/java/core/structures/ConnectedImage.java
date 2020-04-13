@@ -1,6 +1,7 @@
 package core.structures;
 
 import core.Images;
+import core.Pixels;
 
 import java.awt.image.BufferedImage;
 
@@ -81,6 +82,10 @@ public final class ConnectedImage {
         return new ConnectedImage(height, newWidth, newImagePixelValues);
     }
 
+    public ConnectedImage colorVerticalSeam(final int[] verticalSeam) {
+        return colorVerticalSeam(verticalSeam, Pixels.RED);
+    }
+
     /**
      * Create an entirely new ConnectedImage by coloring a vertical seam.
      */
@@ -102,6 +107,48 @@ public final class ConnectedImage {
         }
 
         return new ConnectedImage(height, newWidth, newImagePixelValues);
+    }
+
+    /**
+     * Rotates an image to clockwise by 90 degrees. This allows us to use the vertical seam algorithm in the same
+     * way to remove horizontal seams.
+     */
+    public ConnectedImage rotateRight() {
+        final int newHeight = this.getWidth();
+        final int newWidth = this.getHeight();
+
+        final int[] newImagePixelValues = new int[newHeight * newWidth];
+
+        int i = 0;
+        for (int y = 0; y < newHeight; y++) {
+            for (int x = 0; x < newWidth; x++) {
+                final int pixelColor = this.getPixelRGBValueAt(y, (this.getHeight() - 1) - x);
+                newImagePixelValues[i++] = pixelColor;
+            }
+        }
+
+        return new ConnectedImage(newHeight, newWidth, newImagePixelValues);
+    }
+
+    /**
+     * Rotates an image to counterclockwise by 90 degrees. This lets us rotate an image back to the original orientation
+     * after horizontal seam removal.
+     */
+    public ConnectedImage rotateLeft() {
+        final int newHeight = this.getWidth();
+        final int newWidth = this.getHeight();
+
+        final int[] newImagePixelValues = new int[newHeight * newWidth];
+
+        int i = 0;
+        for (int y = 0; y < newHeight; y++) {
+            for (int x = 0; x < newWidth; x++) {
+                final int pixelColor = this.getPixelRGBValueAt((this.getWidth() - 1) - y, x);
+                newImagePixelValues[i++] = pixelColor;
+            }
+        }
+
+        return new ConnectedImage(newHeight, newWidth, newImagePixelValues);
     }
 }
 

@@ -11,10 +11,10 @@ import java.util.stream.IntStream;
  * Using dynamic programming, find the shortest path from the top of the image to the bottom while minimizing the given
  * cost function.
  */
-public final class VerticalSeamFinder {
+public final class SeamFinder {
     private final CostFunction costFunction;
 
-    public VerticalSeamFinder(final CostFunction costFunction) {
+    public SeamFinder(final CostFunction costFunction) {
         this.costFunction = costFunction;
     }
 
