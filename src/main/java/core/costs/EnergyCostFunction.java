@@ -20,7 +20,6 @@ public final class EnergyCostFunction implements CostFunction {
                                         final int y1,
                                         final int x2,
                                         final int y2) {
-
         if (image.outOfBounds(x1, y1) || image.outOfBounds(x2, y2)) {
             return 0d;
         }

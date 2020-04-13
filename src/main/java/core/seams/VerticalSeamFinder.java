@@ -1,5 +1,6 @@
 package core.seams;
 
+import core.Maths;
 import core.costs.CostFunction;
 import core.structures.ConnectedImage;
 
@@ -23,9 +24,14 @@ public final class VerticalSeamFinder {
             for (int x = 0; x < costArray[0].length; x++) {
                 double value = costFunction.calculate(connectedImage, x, y);
                 if (y > 0) {
-                    value += x > 0 ? costArray[y - 1][x - 1] : 0d; // upper left
-                    value += costArray[y - 1][x]; // upper
-                    value += x < costArray[0].length - 1 ? costArray[y - 1][x + 1] : 0d; // upper right
+                    final double upperLeftValue = x > 0
+                            ? costArray[y - 1][x - 1]
+                            : Double.POSITIVE_INFINITY;
+                    final double upperValue = costArray[y - 1][x];
+                    final double upperRightValue = x < costArray[0].length - 1
+                            ? costArray[y - 1][x + 1]
+                            : Double.POSITIVE_INFINITY;
+                    value += Maths.min(upperLeftValue, upperValue, upperRightValue);
                 }
 
                 costArray[y][x] = value;
@@ -45,6 +51,7 @@ public final class VerticalSeamFinder {
             if (row == 0) {
                 continue;
             }
+
             // Calculate the next column value
             final double upperLeftValue = col > 0 ? costArray[row - 1][col - 1] : Double.POSITIVE_INFINITY;
             final double upperValue = costArray[row - 1][col];

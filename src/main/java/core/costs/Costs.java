@@ -1,5 +1,6 @@
 package core.costs;
 
+import core.Maths;
 import core.Pixels;
 
 public final class Costs {
@@ -49,16 +50,6 @@ public final class Costs {
         final double absoluteDeltaGreen = Math.abs(Pixels.getGreen(pixelValue1) - Pixels.getGreen(pixelValue2));
         final double absoluteDeltaBlue = Math.abs(Pixels.getBlue(pixelValue1) - Pixels.getBlue(pixelValue2));
 
-        return max(absoluteDeltaAlpha, absoluteDeltaRed, absoluteDeltaGreen, absoluteDeltaBlue);
-    }
-
-    public static double max(final double... values) {
-        double maxValue = Double.NEGATIVE_INFINITY;
-        for (final double value : values) {
-            if (value > maxValue) {
-                maxValue = value;
-            }
-        }
-        return maxValue;
+        return Maths.max(absoluteDeltaAlpha, absoluteDeltaRed, absoluteDeltaGreen, absoluteDeltaBlue);
     }
 }

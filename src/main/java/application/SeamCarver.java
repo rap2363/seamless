@@ -9,7 +9,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 
 public final class SeamCarver {
     public static void main(final String[] args) throws IOException {
@@ -20,10 +19,9 @@ public final class SeamCarver {
 
         final String filePath = args[0];
         final BufferedImage image = ImageIO.read(new File(filePath));
-        final String newFile = "new_altered.png";
+        final String newFile = filePath.split("\\.")[0] + "_altered.png";
         ConnectedImage connectedImage = new ConnectedImage(image.getHeight(), image.getWidth(), image);
-        final Random random = new Random(0);
-        final int numVerticalSeams = 100;
+        final int numVerticalSeams = 300;
         for (int i = 0; i < numVerticalSeams; i++) {
             final int[] verticalSeamToRemove
                     = new VerticalSeamFinder(new EnergyCostFunction()).findMinimumVerticalSeam(connectedImage);

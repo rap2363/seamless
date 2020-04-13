@@ -56,7 +56,7 @@ public final class ConnectedImage {
     }
 
     /**
-     * Create an entirely new ConnectedImage by removing a vertical seam. This mutates the underlying ConnectedImage.
+     * Create an entirely new ConnectedImage by removing a vertical seam.
      */
     public ConnectedImage removeVerticalSeam(final int[] verticalSeam) {
         final int height = this.getHeight();
@@ -75,6 +75,29 @@ public final class ConnectedImage {
                 }
 
                 newImagePixelValues[i++] = getPixelRGBValueAt(x, y);
+            }
+        }
+
+        return new ConnectedImage(height, newWidth, newImagePixelValues);
+    }
+
+    /**
+     * Create an entirely new ConnectedImage by coloring a vertical seam.
+     */
+    public ConnectedImage colorVerticalSeam(final int[] verticalSeam, final int color) {
+        final int height = this.getHeight();
+        final int newWidth = this.getWidth();
+        if (newWidth <= 0) {
+            throw new IllegalArgumentException("New image after seam removal will have 0 width!");
+        }
+
+        final int[] newImagePixelValues = new int[height * newWidth];
+
+        int i = 0;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < this.getWidth(); x++) {
+                final int newPixelColor = verticalSeam[y] == x ? color : getPixelRGBValueAt(x, y);
+                newImagePixelValues[i++] = newPixelColor;
             }
         }
 
