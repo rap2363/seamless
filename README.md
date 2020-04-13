@@ -4,7 +4,7 @@ http://www.faculty.idc.ac.il/arik/SCWeb/imret/imret.pdf
 
 Here's an example of seam carving with an PNG image of a lighthouse (500 x 750 pixels):
 
-![alt text](https://imgur.com/a/nugRnHn)
+![alt text](https://imgur.com/bh3t81y)
 
 Here we select some seams to carve out (both horizontal and vertical)
 
